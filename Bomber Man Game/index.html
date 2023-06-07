@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            overflow: hidden;
+            font-family: "Bangers", cursive;
+            letter-spacing: 2px;
+        }
+
+        :root {
+            height: 100vh;
+            width: 100vw;
+            background: no-repeat;
+            background-size: 100% 100%;
+            background-image: url(https://img.freepik.com/free-photo/blue-dark-gradient-texture-wall-background_28629-888.jpg?size=626&ext=jpg);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-size: 100% 100%;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 12vh;
+            width: 100%;
+            color: #8bd77b;
+            font-size: 60px;
+            text-decoration: underline overline;
+            letter-spacing: 4px;
+        }
+
+        .game-score {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 100%;
+            font-size: 30px;
+            color: #b63f3f;
+        }
+
+        .flag-score {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 100%;
+            font-size: 30px;
+            color: #e3a740;
+        }
+
+        .grid-container {
+            height: 60vh;
+            width: 50%;
+            margin-bottom: 0;
+            cursor: pointer;
+            display: grid;
+            grid-template: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr/ 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        }
+
+        .result-display {
+            height: 10vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bolder;
+        }
+
+        button {
+            font-size: 20px;
+            color: red;
+            cursor: pointer;
+            margin: 0 auto;
+            background: black;
+        }
+
+        .boxes {
+            border: 1px solid black;
+        }
+
+        .b {
+            background-image: url("https://img.icons8.com/emoji/48/000000/bomb-emoji.png");
+            background-color: red;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>BOMBER MAN</header>
+    <div class="game-score">SCORE = <div id="gameScore">0</div>
+    </div>
+   
+    <div id="gridContainer" class="grid-container">
+
+    </div>
+    <div id="resultDisplay" class="result-display"></div>
+    <button id="startButton">Start Again</button>
+    <button id="resetButton">RESET</button>
+</body>
+<script>
+    let container = document.getElementById("gridContainer")
+
+    let score = document.getElementById("gameScore");
+    let result=document.getElementById("resultDisplay")
+    console.log(result)
+    let reset=document.getElementById("resetButton")
+    let start=document.getElementById("startButton")
+ 
+
+
+
+    let count = 0;
+    // creating random array 
+    function generateRandomNumbers() {
+        var numbers = [];
+
+        // Generate an array of numbers from 1 to 81
+        for (var i = 1; i <= 81; i++) {
+            numbers.push(i);
+        }
+
+        var randomNumbers = [];
+
+        // Shuffle the numbers randomly
+        while (randomNumbers.length < 10) {
+            var randomIndex = Math.floor(Math.random() * numbers.length);
+            var randomNumber = numbers[randomIndex];
+
+            // Add the random number to the result array
+            randomNumbers.push(randomNumber);
+
+            // Remove the selected number from the original array
+            numbers.splice(randomIndex, 1);
+        }
+
+        return randomNumbers;
+    }
+
+    let random = generateRandomNumbers();
+
+   let arr=[];
+    // Creating boxes 
+    for (let i = 1; i <= 81; i++) {
+        let boxes = document.createElement("div");
+        boxes.id = "cell_"+i;
+        boxes.className = "boxes"
+        boxes.style.backgroundColor="white"
+        container.appendChild(boxes);
+    }
+
+
+    let boxes = document.querySelectorAll(".boxes");
+    //function to select all the bombs 
+    function allbombs(arr) {
+        for (let i of arr) {
+            let el = document.getElementById(`cell_${i}`)
+            el.classList.add("b")
+        }
+    }
+
+    boxes.forEach((e, i) => {
+        e.addEventListener('click', () => {
+            if (random.includes(i + 1)) {
+                let el2 = document.getElementById(`cell_${i + 1}`)
+
+                el2.style.backgroundColor = "red";
+                allbombs(random)
+                
+                score.textContent = count
+                count = 0;
+                result.textContent="game over"
+
+                setTimeout(() => {
+                    selectAll();
+                },3000);
+              
+            } else {
+                if(!arr.includes(i+1)){
+
+                
+              
+                let el = document.getElementById(`cell_${i + 1}`)
+                el.style.backgroundColor = "green";
+                count++;
+                score.textContent = count
+                arr.push(i+1);
+                if(count==71){
+                 result.textContent="Win"
+                 setTimeout(() => {
+                    selectAll();
+                },3000);
+
+                }
+            }
+
+            }
+
+        })
+    })
+
+    function removebombs(arr) {
+        for (let i of arr) {
+            let el = document.getElementById(`cell_${i}`)
+            el.classList.remove("b")
+        }
+    }
+
+    function selectAll(){
+        arr=[];
+        count=0;
+      result.textContent=""
+      score.textContent=0;
+        boxes.forEach((el)=>{
+         el.style.backgroundColor="white"
+
+        })
+        removebombs(random)
+    }
+
+   reset.addEventListener('click',()=>{
+      
+      selectAll();
+   })
+   start.addEventListener('click',()=>{
+      
+      selectAll();
+   })
+
+
+
+
+
+
+</script>
+
+</html>
